@@ -9,6 +9,7 @@ from nltk.tokenize import word_tokenize
 import re
 import matplotlib.pyplot as plt
 import math
+from sklearn.svm import SVC
 # ADD ANY OTHER IMPORTS YOU LIKE
 
 # DO NOT CHANGE THE SIGNATURES OF ANY DEFINED FUNCTIONS.
@@ -157,6 +158,17 @@ def part3_tfidf(df):
     return df_tfidf
 
 # ADD WHATEVER YOU NEED HERE, INCLUDING BONUS CODE.
+def classifier_bonus(df):
+    classifier = SVC()
+    y = df['folder name']
+    x = df.drop(['folder name', 'file name'], axis=1)
+    classifier.fit(x, y)
+    predictions = classifier.predict(x)
+    result = (predictions == y)
+    accuracy = sum(result.replace({True: 1, False: 0}))/len(result)
+    return accuracy
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FrameNet and document vectors.")
     parser.add_argument("directory1", type=str, help="The first class name.")
@@ -168,6 +180,13 @@ if __name__ == "__main__":
     folder_2 = args.directory2
 
     frequent = part1_load(folder_1, folder_2)
+    #print(frequent)
+    
     part2_vis(frequent, args.top_m)
+    
     tdidf = part3_tfidf(frequent)
+    
     part2_vis(tdidf, args.top_m)
+    
+    accurate = classifier_bonus(frequent)
+    print(accurate)
