@@ -160,12 +160,19 @@ def part3_tfidf(df):
 # ADD WHATEVER YOU NEED HERE, INCLUDING BONUS CODE.
 def classifier_bonus(df):
     classifier = SVC()
-    y = df['folder name']
-    x = df.drop(['folder name', 'file name'], axis=1)
+
+    if 'file name' in df.columns:
+        y = df['folder name']
+        x = df.drop(['folder name', 'file name'], axis=1)
+    else:
+        y = df['folder name']
+        x = df.drop(['folder name'], axis=1)
+
     classifier.fit(x, y)
     predictions = classifier.predict(x)
     result = (predictions == y)
     accuracy = sum(result.replace({True: 1, False: 0}))/len(result)
+
     return accuracy
 
 
@@ -184,9 +191,10 @@ if __name__ == "__main__":
     
     part2_vis(frequent, args.top_m)
     
-    tdidf = part3_tfidf(frequent)
+    tfidf = part3_tfidf(frequent)
     
     part2_vis(tdidf, args.top_m)
     
-    accurate = classifier_bonus(frequent)
-    print(accurate)
+    accurate_without = classifier_bonus(frequent)
+    accurate_with = classifier_bonus(tfidf)
+    print(accurate_without, accurate_with)
