@@ -132,13 +132,13 @@ def part3_tfidf(df):
     #ser = ser[ser != 0]
     N = ser.sum()
 
-    tfidf_class1 = {'folder name': {0: folder_1}}
-    for n in ser_1.index:
+        for n in ser_1.index:
         tf = ser_1[n]/N_class1
-        if n in ser_2.index:
-            idf = math.log(2/2)
-        else:
-            idf = math.log(2/1)
+        counts = 0
+        for times in df[n]:
+            if times != 0:
+                counts += 1
+        idf = math.log(df.shape[1]/counts)
         tfidf = tf * idf
         tfidf_class1[n] = {0: tfidf}
     df_tfidf1 = pd.DataFrame(data=tfidf_class1)
@@ -146,10 +146,10 @@ def part3_tfidf(df):
     tfidf_class2 = {'folder name': {0: folder_2}}
     for n in ser_2.index:
         tf = ser_2[n]/N_class2
-        if n in ser_1.index:
-            idf = math.log(2/2)
-        else:
-            idf = math.log(2 / 1)
+        for times in df[n]:
+            if times != 0:
+                counts += 1
+        idf = math.log(df.shape[1]/counts)
         tfidf = tf * idf
         tfidf_class2[n] = {0: tfidf}
     df_tfidf2 = pd.DataFrame(data=tfidf_class2)
