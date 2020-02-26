@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 # DO NOT CHANGE THE SIGNATURES OF ANY DEFINED FUNCTIONS.
 # YOU CAN ADD "HELPER" FUNCTIONS IF YOU LIKE.
 
-def part1_load(folder1, folder2):
+def part1_load(folder1, folder2, n=100):
     # CHANGE WHATEVER YOU WANT *INSIDE* THIS FUNCTION.
     allfiles_class1 = glob("{}/*.txt".format(folder1))
     allfiles_class2 = glob("{}/*.txt".format(folder2))
