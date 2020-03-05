@@ -1,22 +1,4 @@
-import os
-import sys
-import pandas as pd
-import numpy as np
-import numpy.random as npr
-from glob import glob
-import argparse
-from nltk.tokenize import word_tokenize
-import re
-import matplotlib.pyplot as plt
-import math
-from sklearn.svm import SVC
-# ADD ANY OTHER IMPORTS YOU LIKE
-
-# DO NOT CHANGE THE SIGNATURES OF ANY DEFINED FUNCTIONS.
-# YOU CAN ADD "HELPER" FUNCTIONS IF YOU LIKE.
-
 def part1_load(folder1, folder2, n=100):
-    # CHANGE WHATEVER YOU WANT *INSIDE* THIS FUNCTION.
     allfiles_class1 = glob("{}/*.txt".format(folder1))
     allfiles_class2 = glob("{}/*.txt".format(folder2))
 
@@ -81,14 +63,13 @@ def part1_load(folder1, folder2, n=100):
     ser = summary.apply(sum).sort_values(ascending=False)
     ser = ser[ser <= n]
     frequency.drop(ser.index, axis=1, inplace=True)
-    
     return frequency
 
-def part2_vis(df):
+
+def part2_vis(df, m):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
 
-    # CHANGE WHAT YOU WANT HERE
     y = [0, 1]
     df_class1 = df.loc[df['folder name'] == folder_1]
     df_class1 = df_class1.drop(df.columns[y], axis=1)
@@ -108,11 +89,11 @@ def part2_vis(df):
     plt.show()
     return df.plot(kind="bar")
 
+
 def part3_tfidf(df):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
 
-    # CHANGE WHAT YOU WANT HERE
     df_class1 = df.loc[df['folder name'] == folder_1]
     df_class2 = df.loc[df['folder name'] == folder_2]
 
@@ -129,10 +110,10 @@ def part3_tfidf(df):
 
     df = df.drop(df.columns[y], axis=1)
     ser = df.apply(sum).sort_values(ascending=False)
-    #ser = ser[ser != 0]
     N = ser.sum()
 
-        for n in ser_1.index:
+    tfidf_class1 = {'folder name': {0: folder_1}}
+    for n in ser_1.index:
         tf = ser_1[n]/N_class1
         counts = 0
         for times in df[n]:
@@ -149,7 +130,7 @@ def part3_tfidf(df):
         for times in df[n]:
             if times != 0:
                 counts += 1
-        idf = math.log(df.shape[1]/counts)
+        idf = math.log(df.shape[1] / counts)
         tfidf = tf * idf
         tfidf_class2[n] = {0: tfidf}
     df_tfidf2 = pd.DataFrame(data=tfidf_class2)
