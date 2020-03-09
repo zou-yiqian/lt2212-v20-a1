@@ -1,3 +1,21 @@
+import os
+import sys
+import pandas as pd
+import numpy as np
+import numpy.random as npr
+from glob import glob
+import argparse
+from nltk.tokenize import word_tokenize
+import re
+import matplotlib.pyplot as plt
+import math
+from sklearn.svm import SVC
+# ADD ANY OTHER IMPORTS YOU LIKE
+
+# DO NOT CHANGE THE SIGNATURES OF ANY DEFINED FUNCTIONS.
+# YOU CAN ADD "HELPER" FUNCTIONS IF YOU LIKE.
+
+
 def part1_load(folder1, folder2, n=100):
     allfiles_class1 = glob("{}/*.txt".format(folder1))
     allfiles_class2 = glob("{}/*.txt".format(folder2))
