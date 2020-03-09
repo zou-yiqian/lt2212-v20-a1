@@ -88,19 +88,24 @@ def part2_vis(df, m):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
 
+    folder = []
+    for folder_name in df['folder name']:
+        if folder_name not in folder:
+            folder.append(folder_name)
+
     y = [0, 1]
-    df_class1 = df.loc[df['folder name'] == folder_1]
+    df_class1 = df.loc[df['folder name'] == folder[0]]
     df_class1 = df_class1.drop(df.columns[y], axis=1)
     ser_1 = df_class1.apply(sum).sort_values(ascending=False)
 
-    df_class2 = df.loc[df['folder name'] == folder_2]
+    df_class2 = df.loc[df['folder name'] == folder[1]]
     df_class2 = df_class2.drop(df.columns[y], axis=1)
     ser_2 = df_class2.apply(sum).sort_values(ascending=False)
 
     df = df.drop(df.columns[y], axis=1)
     ser = df.apply(sum).sort_values(ascending=False)[0:m]
 
-    data = {folder_1: ser_1[ser.index], folder_2: ser_2[ser.index]}
+    data = {folder[0]: ser_1[ser.index], folder[1]: ser_2[ser.index]}
     df = pd.DataFrame(data)
     df.plot(kind='bar')
     plt.legend()
@@ -112,8 +117,13 @@ def part3_tfidf(df):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
 
-    df_class1 = df.loc[df['folder name'] == folder_1]
-    df_class2 = df.loc[df['folder name'] == folder_2]
+    folder = []
+    for folder_name in df['folder name']:
+        if folder_name not in folder:
+            folder.append(folder_name)
+
+    df_class1 = df.loc[df['folder name'] == folder[0]]
+    df_class2 = df.loc[df['folder name'] == folder[1]]
 
     y = [0, 1]
     df_class1 = df_class1.drop(df.columns[y], axis=1)
@@ -130,7 +140,7 @@ def part3_tfidf(df):
     ser = df.apply(sum).sort_values(ascending=False)
     N = ser.sum()
 
-    tfidf_class1 = {'folder name': {0: folder_1}}
+    tfidf_class1 = {'folder name': {0: folder[0]}}
     for n in ser_1.index:
         tf = ser_1[n]/N_class1
         counts = 0
@@ -142,7 +152,7 @@ def part3_tfidf(df):
         tfidf_class1[n] = {0: tfidf}
     df_tfidf1 = pd.DataFrame(data=tfidf_class1)
 
-    tfidf_class2 = {'folder name': {0: folder_2}}
+    tfidf_class2 = {'folder name': {0: folder[1]}}
     for n in ser_2.index:
         tf = ser_2[n]/N_class2
         for times in df[n]:
@@ -155,6 +165,7 @@ def part3_tfidf(df):
 
     df_tfidf = df_tfidf1.merge(df_tfidf2, how='outer').fillna(0)
     return df_tfidf
+
 
 # ADD WHATEVER YOU NEED HERE, INCLUDING BONUS CODE.
 def classifier_bonus(df):
