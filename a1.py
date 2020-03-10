@@ -10,6 +10,8 @@ import re
 import matplotlib.pyplot as plt
 import math
 from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 # ADD ANY OTHER IMPORTS YOU LIKE
 
 # DO NOT CHANGE THE SIGNATURES OF ANY DEFINED FUNCTIONS.
@@ -117,71 +119,45 @@ def part3_tfidf(df):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
 
-    folder = []
-    for folder_name in df['folder name']:
-        if folder_name not in folder:
-            folder.append(folder_name)
+    columns = df.columns
+    np_raw = df.iloc[:, 2:].to_numpy()
+    np_extra = df.iloc[:, :2].to_numpy()
 
-    df_class1 = df.loc[df['folder name'] == folder[0]]
-    df_class2 = df.loc[df['folder name'] == folder[1]]
+    tf = np.zeros(np_raw.shape)
 
-    y = [0, 1]
-    df_class1 = df_class1.drop(df.columns[y], axis=1)
-    ser_1 = df_class1.apply(sum).sort_values(ascending=False)
-    ser_1 = ser_1[ser_1 != 0]
-    N_class1 = ser_1.sum()
+    for i in range(np_raw.shape[0]):
+        row_sum = np.sum(np_raw[i])
+        for j in range(np_raw.shape[1]):
+            tf[i][j] = (np_raw[i][j]) / row_sum
 
-    df_class2 = df_class2.drop(df.columns[y], axis=1)
-    ser_2 = df_class2.apply(sum).sort_values(ascending=False)
-    ser_2 = ser_2[ser_2 != 0]
-    N_class2 = ser_2.sum()
+    idf = np.zeros(np_raw.shape)
+    transposed_np = np_raw.T
 
-    df = df.drop(df.columns[y], axis=1)
-    ser = df.apply(sum).sort_values(ascending=False)
-    N = ser.sum()
+    for i in range(transposed_np.shape[0]):
+        count = list(transposed_np[i] > 0).count(True)
+        idf_value = np.log((transposed_np.shape[0] * transposed_np.shape[1]) / count)
+        for j in range(transposed_np.shape[1]):
+            idf[j, i] = idf_value
 
-    tfidf_class1 = {'folder name': {0: folder[0]}}
-    for n in ser_1.index:
-        tf = ser_1[n]/N_class1
-        counts = 0
-        for times in df[n]:
-            if times != 0:
-                counts += 1
-        idf = math.log(df.shape[1]/counts)
-        tfidf = tf * idf
-        tfidf_class1[n] = {0: tfidf}
-    df_tfidf1 = pd.DataFrame(data=tfidf_class1)
+    tf_idf = tf * idf
 
-    tfidf_class2 = {'folder name': {0: folder[1]}}
-    for n in ser_2.index:
-        tf = ser_2[n]/N_class2
-        for times in df[n]:
-            if times != 0:
-                counts += 1
-        idf = math.log(df.shape[1] / counts)
-        tfidf = tf * idf
-        tfidf_class2[n] = {0: tfidf}
-    df_tfidf2 = pd.DataFrame(data=tfidf_class2)
+    df_td_idf = np.hstack((np_extra, tf_idf))
+    df_td_idf = pd.DataFrame(df_td_idf).fillna(0)
+    df_td_idf.columns = columns
 
-    df_tfidf = df_tfidf1.merge(df_tfidf2, how='outer').fillna(0)
-    return df_tfidf
+    return df_td_idf
 
 
 # ADD WHATEVER YOU NEED HERE, INCLUDING BONUS CODE.
 def classifier_bonus(df):
-    classifier = SVC()
+    y = df['folder name']
+    x = df.drop(['folder name', 'file name'], axis=1)
 
-    if 'file name' in df.columns:
-        y = df['folder name']
-        x = df.drop(['folder name', 'file name'], axis=1)
-    else:
-        y = df['folder name']
-        x = df.drop(['folder name'], axis=1)
-
-    classifier.fit(x, y)
-    predictions = classifier.predict(x)
-    result = (predictions == y)
-    accuracy = sum(result.replace({True: 1, False: 0}))/len(result)
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.20)
+    classifier = SVC(kernel='linear')
+    classifier.fit(X_train, y_train)
+    y_pred = classifier.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred, normalize=True)
 
     return accuracy
 
