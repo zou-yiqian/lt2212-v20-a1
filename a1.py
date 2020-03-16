@@ -179,7 +179,7 @@ if __name__ == "__main__":
     
     tfidf = part3_tfidf(frequent)
     
-    part2_vis(tdidf, args.top_m)
+    part2_vis(tfidf, args.top_m)
     
     accurate_without = classifier_bonus(frequent)
     accurate_with = classifier_bonus(tfidf)
