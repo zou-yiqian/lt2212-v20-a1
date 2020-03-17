@@ -39,7 +39,8 @@ def part1_load(folder1, folder2, n=100):
                 #text = re.sub(r'[^\w\s]', '', text)
                 #text = text.lower()
 
-            words = word_tokenize(text)
+            words_temp = word_tokenize(text)
+            words = [word for word in words_temp if word.isalpha()]
             for word in words:
                 if word not in counts:
                     counts[word] = {m1: 1}
@@ -66,7 +67,8 @@ def part1_load(folder1, folder2, n=100):
                 #text = re.sub(r'[^\w\s]', '', text)
                 #text = text.lower()
 
-            words = word_tokenize(text)
+            words_temp = word_tokenize(text)
+            words = [word for word in words_temp if word.isalpha()]
             for word in words:
                 if word not in counts:
                     counts[word] = {m2: 1}
@@ -135,11 +137,11 @@ def part3_tfidf(df):
 
     for i in range(transposed_np.shape[0]):
         count = list(transposed_np[i] > 0).count(True)
-        idf_value = np.log((transposed_np.shape[0] * transposed_np.shape[1]) / count)
+        idf_value = np.log((transposed_np.shape[0]) / count)
         for j in range(transposed_np.shape[1]):
             idf[j, i] = idf_value
 
-    tf_idf = tf * idf
+    tf_idf = df.iloc[:, 2:].mul(idf, axis=1)
 
     df_td_idf = np.hstack((np_extra, tf_idf))
     df_td_idf = pd.DataFrame(df_td_idf).fillna(0)
